@@ -10,7 +10,7 @@ class AuthenticationService {
     const createdAt = new Date().toISOString();
 
     const query = {
-      text: 'INSERT INTO authentication VALUES ($1, $2, $2)',
+      text: 'INSERT INTO authentications VALUES ($1, $2, $2)',
       values: [token, createdAt],
     };
 
