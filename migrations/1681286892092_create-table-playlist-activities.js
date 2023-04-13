@@ -1,9 +1,10 @@
 
 exports.up = (pgm) => {
-  pgm.createTable('playlist_songs', {
+  pgm.createTable('playlist_song_activities', {
     id: {
-      type: 'VARCHAR(50)',
+      type: 'varchar(50)',
       primaryKey: true,
+      notNull: true,
     },
     playlist_id: {
       type: 'VARCHAR(50)',
@@ -16,7 +17,16 @@ exports.up = (pgm) => {
       references: '"songs"',
       notNull: true,
     },
-    created_at: {
+    user_id: {
+      type: 'VARCHAR(50)',
+      references: '"users"',
+      notNull: true,
+    },
+    action: {
+      type: 'VARCHAR(10)',
+      notNull: true,
+    },
+    time: {
       type: 'datetime',
       notNull: true,
     },
@@ -24,5 +34,6 @@ exports.up = (pgm) => {
 };
 
 exports.down = (pgm) => {
-  pgm.dropTable('playlist_songs');
+  pgm.dropTable('playlist_song_activities');
 };
+

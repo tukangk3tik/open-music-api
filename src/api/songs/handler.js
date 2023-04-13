@@ -1,6 +1,6 @@
 const {
   successResp, httpStatusCode,
-  successRespMsg, failHandler,
+  successRespMsg,
 } = require('../../utils/http/response');
 const autoBind = require('auto-bind');
 
@@ -22,59 +22,43 @@ class SongHandler {
   }
 
   async getSongByIdHandler(request, h) {
-    try {
-      const {id} = request.params;
-      const song = await this._service.getSongById(id);
-      return successResp({song: song});
-    } catch (e) {
-      return failHandler(h, e);
-    }
+    const {id} = request.params;
+    const song = await this._service.getSongById(id);
+    return successResp({song: song});
   }
 
   async postSongHandler(request, h) {
-    try {
-      this._validator.validateSongPayload(request.payload);
-      const {title, year, genre, performer, duration, albumId} =
-          request.payload;
+    this._validator.validateSongPayload(request.payload);
+    const {title, year, genre, performer, duration, albumId} =
+        request.payload;
 
-      const songId = await this._service.addSong(
-          {title, year, genre, performer, duration, albumId},
-      );
+    const songId = await this._service.addSong(
+        {title, year, genre, performer, duration, albumId},
+    );
 
-      const msg = 'Lagu berhasil ditambahkan';
-      const response = h.response(successRespMsg({songId: songId}, msg));
-      response.code(httpStatusCode.created);
-      return response;
-    } catch (e) {
-      return failHandler(h, e);
-    }
+    const msg = 'Lagu berhasil ditambahkan';
+    const response = h.response(successRespMsg({songId: songId}, msg));
+    response.code(httpStatusCode.created);
+    return response;
   }
 
   async putSongHandler(request, h) {
-    try {
-      this._validator.validateSongPayload(request.payload);
-      const {id} = request.params;
+    this._validator.validateSongPayload(request.payload);
+    const {id} = request.params;
 
-      await this._service.updateSong(id, request.payload);
+    await this._service.updateSong(id, request.payload);
 
-      const msg = 'Lagu berhasil diperbarui';
-      return successRespMsg(null, msg);
-    } catch (e) {
-      return failHandler(h, e);
-    }
+    const msg = 'Lagu berhasil diperbarui';
+    return successRespMsg(null, msg);
   }
 
   async deleteSongHandler(request, h) {
-    try {
-      const {id} = request.params;
+    const {id} = request.params;
 
-      await this._service.deleteSong(id);
+    await this._service.deleteSong(id);
 
-      const msg = 'Lagu berhasil dihapus';
-      return successRespMsg(null, msg);
-    } catch (e) {
-      return failHandler(h, e);
-    }
+    const msg = 'Lagu berhasil dihapus';
+    return successRespMsg(null, msg);
   }
 }
 

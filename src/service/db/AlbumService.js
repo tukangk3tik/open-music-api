@@ -32,7 +32,6 @@ class AlbumService {
       throw new NotFoundException('Album tidak ditemukan');
     }
 
-    // todo, check if album has songs, view songs
     const getSongsQuery = {
       text: 'SELECT * FROM songs WHERE album_id = $1',
       values: [id],

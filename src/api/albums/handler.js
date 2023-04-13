@@ -18,57 +18,41 @@ class AlbumHandler {
     return successResp(albums);
   }
 
-  async getAlbumByIdHandler(request, h) {
-    try {
-      const {id} = request.params;
-      const album = await this._service.getAlbumById(id);
-      return successResp({album: album});
-    } catch (e) {
-      return failHandler(h, e);
-    }
+  async getAlbumByIdHandler(request) {
+    const {id} = request.params;
+    const album = await this._service.getAlbumById(id);
+    return successResp({album: album});
   }
 
   async postAlbumHandler(request, h) {
-    try {
-      this._validator.validateAlbumPayload(request.payload);
-      const {name, year} = request.payload;
+    this._validator.validateAlbumPayload(request.payload);
+    const {name, year} = request.payload;
 
-      const albumId = await this._service.addAlbum({name, year});
+    const albumId = await this._service.addAlbum({name, year});
 
-      const msg = 'Album berhasil ditambahkan';
-      const response = h.response(successRespMsg({albumId}, msg));
-      response.code(httpStatusCode.created);
-      return response;
-    } catch (e) {
-      return failHandler(h, e);
-    }
+    const msg = 'Album berhasil ditambahkan';
+    const response = h.response(successRespMsg({albumId}, msg));
+    response.code(httpStatusCode.created);
+    return response;
   }
 
   async putAlbumHandler(request, h) {
-    try {
-      this._validator.validateAlbumPayload(request.payload);
-      const {id} = request.params;
+    this._validator.validateAlbumPayload(request.payload);
+    const {id} = request.params;
 
-      await this._service.updateAlbum(id, request.payload);
+    await this._service.updateAlbum(id, request.payload);
 
-      const msg = 'Album berhasil diperbarui';
-      return successRespMsg(null, msg);
-    } catch (e) {
-      return failHandler(h, e);
-    }
+    const msg = 'Album berhasil diperbarui';
+    return successRespMsg(null, msg);
   }
 
   async deleteAlbumHandler(request, h) {
-    try {
-      const {id} = request.params;
+    const {id} = request.params;
 
-      await this._service.deleteAlbum(id);
+    await this._service.deleteAlbum(id);
 
-      const msg = 'Album berhasil dihapus';
-      return successRespMsg(null, msg);
-    } catch (e) {
-      return failHandler(h, e);
-    }
+    const msg = 'Album berhasil dihapus';
+    return successRespMsg(null, msg);
   }
 }
 

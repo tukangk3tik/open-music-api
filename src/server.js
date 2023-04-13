@@ -20,6 +20,12 @@ const AuthService = require('./service/db/AuthenticationService');
 const TokenManager = require('./tokenize/TokenManager');
 const AuthValidator = require('./validator/authentication');
 
+const playlists = require('./api/playlists');
+const PlaylistService = require('./service/db/PlaylistService');
+const PlaylistValidator = require('./validator/playlists');
+
+const CollabService = require('./service/db/CollaborationService');
+
 const ClientError = require('./exceptions/ClientError');
 const {failResp, httpStatusCode} = require('./utils/http/response');
 
@@ -28,6 +34,8 @@ const init = async () => {
   const songService = new SongService();
   const userService = new UserService();
   const authService = new AuthService();
+  const collabService = new CollabService();
+  const playlistService = new PlaylistService(collabService, songService);
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -57,7 +65,7 @@ const init = async () => {
     validate: (artifacts) => ({
       isValid: true,
       credentials: {
-        id: artifacts.decoded.payload.id,
+        id: artifacts.decoded.payload.userId,
       },
     }),
   });
@@ -91,6 +99,14 @@ const init = async () => {
         userService,
         tokenManager: TokenManager,
         validator: AuthValidator,
+      },
+    },
+    {
+      plugin: playlists,
+      options: {
+        playlistService,
+        collabService,
+        validator: PlaylistValidator,
       },
     },
   ]);
