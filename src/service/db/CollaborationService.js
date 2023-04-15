@@ -1,4 +1,5 @@
 const {Pool} = require('pg');
+const {nanoid} = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantErrorException');
 
 class CollaborationService {
@@ -8,15 +9,15 @@ class CollaborationService {
 
   async addCollaboration(playlistId, userId) {
     const id = `collab-${nanoid(16)}`;
+    const createdAt = new Date().toISOString();
 
     const query = {
       text: 'INSERT INTO playlist_collaborations ' +
-        'VALUES($1, $2, $3) RETURNING id',
-      values: [id, playlistId, userId],
+        'VALUES ($1, $2, $3, $4) RETURNING id',
+      values: [id, playlistId, userId, createdAt],
     };
 
     const result = await this._pool.query(query);
-
     if (!result.rows.length) {
       throw new InvariantError('Kolaborasi gagal ditambahkan');
     }
@@ -27,7 +28,7 @@ class CollaborationService {
   async deleteCollaboration(playlistId, userId) {
     const query = {
       text: 'DELETE FROM playlist_collaborations ' +
-        'WHERE note_id = $1 AND user_id = $2 RETURNING id',
+        'WHERE playlist_id = $1 AND user_id = $2 RETURNING id',
       values: [playlistId, userId],
     };
 

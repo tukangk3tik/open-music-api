@@ -24,7 +24,9 @@ const playlists = require('./api/playlists');
 const PlaylistService = require('./service/db/PlaylistService');
 const PlaylistValidator = require('./validator/playlists');
 
+const collaborations = require('./api/collaborations');
 const CollabService = require('./service/db/CollaborationService');
+const CollabValidator = require('./validator/collaborations');
 
 const ClientError = require('./exceptions/ClientError');
 const {failResp, httpStatusCode} = require('./utils/http/response');
@@ -107,6 +109,15 @@ const init = async () => {
         playlistService,
         collabService,
         validator: PlaylistValidator,
+      },
+    },
+    {
+      plugin: collaborations,
+      options: {
+        collabService,
+        playlistService,
+        userService,
+        validator: CollabValidator,
       },
     },
   ]);
