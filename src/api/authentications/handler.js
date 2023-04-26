@@ -44,7 +44,7 @@ class AuthenticationHandler {
     const {id} = this._tokenManager.verifyRefreshToken(refreshToken);
 
     const accessToken = this._tokenManager.generateAccessToken({id});
-    return successRespMsg(accessToken, 'Access Token berhasil diperbarui');
+    return successRespMsg({accessToken}, 'Access Token berhasil diperbarui');
   }
 
   async logoutHandler(request, _) {

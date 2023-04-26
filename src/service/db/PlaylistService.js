@@ -46,7 +46,7 @@ class PlaylistService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new InvariantError('Playlist gagal ditambahkan');
     }
 
@@ -60,7 +60,7 @@ class PlaylistService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundException(
           `Playlist gagal dihapus. Playlist tidak ditemukan`,
       );
@@ -77,7 +77,7 @@ class PlaylistService {
     };
 
     const checkResult = await this._pool.query(checkQuery);
-    if (checkResult.rows.length) {
+    if (checkResult.rowCount) {
       throw new InvariantError('Lagu sudah ada di playlist');
     }
 
@@ -90,7 +90,7 @@ class PlaylistService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new InvariantError('Playlist gagal ditambahkan');
     }
 
@@ -105,7 +105,7 @@ class PlaylistService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new InvariantError('Lagu gagal dihapus');
     }
 
@@ -122,7 +122,7 @@ class PlaylistService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundException('Playlist tidak ditemukan');
     }
 
@@ -158,7 +158,7 @@ class PlaylistService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Resource yang Anda minta tidak ditemukan');
     }
 

@@ -44,11 +44,20 @@ class SongService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundException('Lagu tidak ditemukan');
     }
 
     return mapSingleSongToModel(result.rows[0]);
+  }
+
+  async getSongByAlbums(albumId) {
+    const getSongsQuery = {
+      text: 'SELECT * FROM songs WHERE album_id = $1',
+      values: [albumId],
+    };
+    const getSongs = await this._pool.query(getSongsQuery);
+    return getSongs.rows.map(mapSongListToModel);
   }
 
   async addSong({title, year, genre, performer, duration, albumId}) {
@@ -88,7 +97,7 @@ class SongService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundException(
           'Gagal memperbarui lagu. Lagu tidak ditemukan',
       );
@@ -102,7 +111,7 @@ class SongService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundException(
           `Lagu gagal dihapus. Lagu tidak ditemukan`,
       );

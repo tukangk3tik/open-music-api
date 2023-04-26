@@ -76,7 +76,8 @@ const init = async () => {
     {
       plugin: albums,
       options: {
-        service: albumService,
+        albumService,
+        songService,
         validator: AlbumValidator,
       },
     },

@@ -9,8 +9,6 @@ const NotFoundException = require('../../exceptions/NotFoundException');
 const InvariantErrorException = require(
     '../../exceptions/InvariantErrorException',
 );
-const {mapSongListToModel} = require('../../utils/mapper/song_map');
-
 class AlbumService {
   constructor() {
     this._pool = new Pool();
@@ -28,16 +26,9 @@ class AlbumService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundException('Album tidak ditemukan');
     }
-
-    const getSongsQuery = {
-      text: 'SELECT * FROM songs WHERE album_id = $1',
-      values: [id],
-    };
-    const getSongs = await this._pool.query(getSongsQuery);
-    result.rows[0].songs = getSongs.rows.map(mapSongListToModel);
 
     return mapSingleAlbumToModel(result.rows[0]);
   }
@@ -48,8 +39,8 @@ class AlbumService {
     const createdAt = new Date().toISOString();
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5) RETURNING id',
-      values: [id, name, year, createdAt, createdAt],
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $4) RETURNING id',
+      values: [id, name, year, createdAt],
     };
 
     const result = await this._pool.query(query);
@@ -70,7 +61,7 @@ class AlbumService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundException(
           'Gagal memperbarui album. Album tidak ditemukan',
       );
@@ -97,7 +88,7 @@ class AlbumService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundException(
           `${failMsg}Album tidak ditemukan`,
       );
