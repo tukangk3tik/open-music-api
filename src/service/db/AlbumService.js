@@ -29,7 +29,7 @@ class AlbumService {
     if (!result.rowCount) {
       throw new NotFoundException('Album tidak ditemukan');
     }
-
+    console.log(result.rows[0]);
     return mapSingleAlbumToModel(result.rows[0]);
   }
 
@@ -93,6 +93,30 @@ class AlbumService {
           `${failMsg}Album tidak ditemukan`,
       );
     }
+  }
+
+  async updateAlbumCover(id, path) {
+    const oldData = await this.getAlbumById(id);
+
+    const updatedAt = new Date().toISOString();
+    const query = {
+      text: 'UPDATE albums' +
+        ' SET cover = $1, updated_at = $2' +
+        ' WHERE id = $3 RETURNING id',
+      values: [path, updatedAt, id],
+    };
+
+    const result = await this._pool.query(query);
+    if (!result.rowCount) {
+      throw new NotFoundException(
+          'Gagal memperbarui sampul album. Album tidak ditemukan',
+      );
+    }
+
+    return {
+      oldCover: oldData.coverUrl,
+      newCover: path,
+    };
   }
 }
 

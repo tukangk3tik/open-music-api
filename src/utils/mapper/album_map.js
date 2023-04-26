@@ -12,13 +12,17 @@ const mapSingleAlbumToModel = ({
   id,
   name,
   year,
+  cover,
   songs,
-}) => ({
-  id,
-  name,
-  year,
-  songs,
-});
+}) => {
+  return {
+    id,
+    name,
+    year,
+    coverUrl: cover,
+    songs,
+  };
+};
 
 module.exports = {
   mapAlbumListToModel,
