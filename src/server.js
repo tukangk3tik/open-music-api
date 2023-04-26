@@ -28,6 +28,11 @@ const collaborations = require('./api/collaborations');
 const CollabService = require('./service/db/CollaborationService');
 const CollabValidator = require('./validator/collaborations');
 
+// Exports
+const _exports = require('./api/exports');
+const ProducerService = require('./service/rabbitmq/ProducerService');
+const ExportValidator = require('./validator/exports');
+
 const ClientError = require('./exceptions/ClientError');
 const {failResp, httpStatusCode} = require('./utils/http/response');
 
@@ -121,11 +126,21 @@ const init = async () => {
         validator: CollabValidator,
       },
     },
+    {
+      plugin: _exports,
+      options: {
+        producerService: ProducerService,
+        playlistService: playlistService,
+        validator: ExportValidator,
+      },
+    },
   ]);
 
   // error handling
   server.ext('onPreResponse', (request, h) => {
     const {response} = request;
+
+    console.log(response);
 
     if (response instanceof Error) {
       if (response instanceof ClientError) {
