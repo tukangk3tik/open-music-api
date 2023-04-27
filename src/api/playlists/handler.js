@@ -103,7 +103,7 @@ class PlaylistHandler {
 
     return successRespMsg(
         null,
-        'Lagu berhasil dihapus dari playlist'
+        'Lagu berhasil dihapus dari playlist',
     );
   }
 }

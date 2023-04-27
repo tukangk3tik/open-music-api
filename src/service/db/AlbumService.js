@@ -118,6 +118,73 @@ class AlbumService {
       newCover: path,
     };
   }
+
+  async likeAlbum(albumId, userId) {
+    const id = 'albumlike-' + nanoid(16);
+    const createdAt = new Date().toISOString();
+
+    const isLike = await this.isUserLikeAlbum(albumId, userId);
+    if (isLike) {
+      throw new InvariantErrorException('Anda sudah melakukan like.');
+    }
+
+    const query = {
+      text: 'INSERT INTO album_user_likes' +
+        ' VALUES ($1, $2, $3, $4) RETURNING id',
+      values: [id, albumId, userId, createdAt],
+    };
+
+    const result = await this._pool.query(query);
+    if (!result.rows[0].id) {
+      throw new InvariantErrorException('Gagal melakukan like.');
+    }
+  }
+
+  async unlikeAlbum(albumId, userId) {
+    const isLike = await this.isUserLikeAlbum(albumId, userId);
+    if (!isLike) {
+      throw new InvariantErrorException(
+          'Anda belum melakukan like sebelumnya.',
+      );
+    }
+
+    const query = {
+      text: 'DELETE FROM album_user_likes' +
+        ' WHERE album_id = $1 AND user_id = $2 RETURNING id',
+      values: [albumId, userId],
+    };
+
+    const result = await this._pool.query(query);
+    if (!result.rows[0].id) {
+      throw new InvariantErrorException('Gagal melakukan unlike.');
+    }
+  }
+
+  async getAllLikes(albumId) {
+    const query = {
+      text: 'SELECT id FROM album_user_likes' +
+        ' WHERE album_id = $1',
+      values: [albumId],
+    };
+
+    const result = await this._pool.query(query);
+    return result.rowCount;
+  }
+
+  async isUserLikeAlbum(albumId, userId) {
+    const query = {
+      text: 'SELECT id FROM album_user_likes' +
+        ' WHERE album_id = $1 AND user_id = $2',
+      values: [albumId, userId],
+    };
+
+    const result = await this._pool.query(query);
+    if (!result.rowCount) {
+      return false;
+    }
+
+    return true;
+  }
 }
 
 module.exports = AlbumService;

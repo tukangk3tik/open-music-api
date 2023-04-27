@@ -90,6 +90,33 @@ class AlbumHandler {
     response.code(httpStatusCode.created);
     return response;
   }
+
+  async likeAlbumHandler(request, h) {
+    const {id: userId} = request.auth.credentials;
+    const {id} = request.params;
+    await this._albumService.getAlbumById(id);
+    await this._albumService.likeAlbum(id, userId);
+
+    const msg = 'Berhasil melakukan like pada album';
+    const response = h.response(successRespMsg(null, msg));
+    response.code(httpStatusCode.created);
+    return response;
+  }
+
+  async unlikeAlbumHandler(request, h) {
+    const {id: userId} = request.auth.credentials;
+    const {id} = request.params;
+    await this._albumService.unlikeAlbum(id, userId);
+
+    const msg = 'Berhasil melakukan unlike pada album';
+    return successRespMsg(null, msg);
+  }
+
+  async getLikesAlbumHandler(request) {
+    const {id} = request.params;
+    const numberOfLikes = await this._albumService.getAllLikes(id);
+    return successResp({likes: numberOfLikes});
+  }
 }
 
 module.exports = AlbumHandler;
