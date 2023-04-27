@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const config = require('../utils/config');
+
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
 const Inert = require('@hapi/inert');
@@ -37,6 +39,7 @@ const ExportValidator = require('./validator/exports');
 
 const StorageService = require('./service/storage/StorageService');
 const ImageValidator = require('./validator/uploads');
+const CacheService = require('./service/redis/CacheService');
 
 const _uploads = require('./api/upload');
 
@@ -44,7 +47,8 @@ const ClientError = require('./exceptions/ClientError');
 const {failResp, httpStatusCode} = require('./utils/http/response');
 
 const init = async () => {
-  const albumService = new AlbumService();
+  const cacheService = new CacheService();
+  const albumService = new AlbumService(cacheService);
   const songService = new SongService();
   const userService = new UserService();
   const authService = new AuthService();
@@ -55,8 +59,8 @@ const init = async () => {
   );
 
   const server = Hapi.server({
-    port: process.env.PORT,
-    host: process.env.HOST,
+    port: config.app.port,
+    host: config.app.host,
     routes: {
       cors: {
         origin: ['*'],
@@ -75,12 +79,12 @@ const init = async () => {
   ]);
 
   server.auth.strategy('auth_jwt', 'jwt', {
-    keys: process.env.ACCESS_TOKEN_KEY,
+    keys: config.jwt.access_token_key,
     verify: {
       aud: false,
       iss: false,
       sub: false,
-      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+      maxAgeSec: config.jwt.access_token_age,
     },
     validate: (artifacts) => ({
       isValid: true,
@@ -158,8 +162,6 @@ const init = async () => {
   // error handling
   server.ext('onPreResponse', (request, h) => {
     const {response} = request;
-
-    console.log(response);
 
     if (response instanceof Error) {
       if (response instanceof ClientError) {
